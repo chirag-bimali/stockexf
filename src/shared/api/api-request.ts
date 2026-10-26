@@ -3,7 +3,7 @@ import http from "@shared/lib/http";
 import { ApiClientError } from "./api-error";
 import type { ApiResponse } from "./types";
 
-export async function apiRequest<T>(
+async function apiRequest<T>(
   path: string,
   config: AxiosRequestConfig = {},
 ): Promise<T> {
@@ -45,3 +45,20 @@ export async function apiRequest<T>(
 
   return apiResponse.data as T;
 }
+
+export const api = {
+  get: <T>(path: string, config?: AxiosRequestConfig) =>
+    apiRequest<T>(path, { ...config, method: "GET" }),
+
+  post: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) =>
+    apiRequest<T>(path, { ...config, method: "POST", data }),
+
+  put: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) =>
+    apiRequest<T>(path, { ...config, method: "PUT", data }),
+
+  patch: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) =>
+    apiRequest<T>(path, { ...config, method: "PATCH", data }),
+
+  delete: <T>(path: string, config?: AxiosRequestConfig) =>
+    apiRequest<T>(path, { ...config, method: "DELETE" }),
+};
