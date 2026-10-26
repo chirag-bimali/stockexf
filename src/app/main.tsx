@@ -4,6 +4,7 @@ import "@fontsource-variable/outfit";
 import "./styles/index.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import "@shared/config/env";
 
 const router = createRouter({
   routeTree,
