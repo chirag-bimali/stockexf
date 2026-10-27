@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { signinSchema, type SigninValues } from "./schema";
-import { signin } from "./signin.api";
+import { useSignin } from "./useSignin";
+import { useAuthStore } from "@shared/auth";
+import { queryClient } from "@shared/lib";
 
 export function useSigninForm() {
   const navigate = useNavigate();
+  const search = useSearch({ from: "/signin" });
+  const { mutateAsync } = useSignin();
+  const signIn = useAuthStore((state) => state.signIn);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<SigninValues>({
@@ -18,8 +23,20 @@ export function useSigninForm() {
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
-      await signin(values);
-      await navigate({ to: "/" });
+      const data = await mutateAsync({
+        email: values.email.trim().toLowerCase(),
+        password: values.password,
+        remember: values.remember,
+      });
+
+      signIn(data, values.remember);
+      queryClient.clear();
+
+      if (search.redirect) {
+        navigate({ href: search.redirect, replace: true });
+      } else {
+        navigate({ to: "/", replace: true });
+      }
     } catch (err) {
       form.setError("root.serverError", {
         message:

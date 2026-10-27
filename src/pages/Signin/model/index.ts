@@ -1,2 +1,2 @@
-export { PASSWORD_HINT } from "./schema";
+export * from "./schema";
 export { useSigninForm } from "./useSigninForm";

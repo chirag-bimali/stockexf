@@ -6,11 +6,21 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "@shared/config/env";
 import { QueryClientProvider } from "./providers/QueryClientProvider";
+import { setupAuth } from "./setup/auth";
 
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",
   scrollRestoration: true,
+});
+
+setupAuth({
+  onUnauthorized: () => {
+    router.navigate({
+      to: "/signin",
+      search: { redirect: router.state.location.href },
+    });
+  },
 });
 
 declare module "@tanstack/react-router" {

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import { signupSchema, type SignupValues } from "./schema";
 import { getPasswordStrength } from "./passwordStrength";
-import { useSignup } from "./useSignupQuery"; // adjust to your path
+import { useSignup } from "./useSignup"; // adjust to your path
 import { ApiClientError } from "@shared/api";
 
 export function useSignupForm() {

@@ -3,6 +3,22 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { ApiClientError } from "@shared/api";
 import type { ApiResponse } from "@shared/api";
 
+type TokenProvider = () => string | null;
+type UnauthorizedHandler = () => void;
+
+let tokenProvider: TokenProvider | null = null;
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+
+export function setTokenProvider(provider: TokenProvider | null): void {
+  tokenProvider = provider;
+}
+
+export function setUnauthorizedHandler(
+  handler: UnauthorizedHandler | null,
+): void {
+  unauthorizedHandler = handler;
+}
+
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15_000,
@@ -11,16 +27,33 @@ const http = axios.create({
   },
 });
 
-// Runs before every request.
+function isAuthEndpoint(url?: string): boolean {
+  if (!url) return false;
+
+  const normalized = url.toLowerCase();
+
+  return (
+    normalized.includes("/auth/signin") || normalized.includes("/auth/signup")
+  );
+}
+
 function onRequest(config: InternalAxiosRequestConfig) {
+  const token = tokenProvider?.() ?? null;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 }
 
-// Runs when Axios receives an HTTP error or cannot complete a request.
 function onResponseError(error: AxiosError) {
   if (error.response) {
-    const body: unknown = error.response.data;
+    if (error.response.status === 401 && !isAuthEndpoint(error.config?.url)) {
+      unauthorizedHandler?.();
+    }
 
+    const body: unknown = error.response.data;
     const apiError = isApiResponse(body) ? body.error : undefined;
 
     return Promise.reject(
