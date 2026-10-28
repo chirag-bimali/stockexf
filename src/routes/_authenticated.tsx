@@ -1,8 +1,9 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { isSessionExpired, useAuthStore } from "@shared/auth";
+import { ensureMe } from "@features/authorization";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: ({ location }) => {
+  beforeLoad: async ({ location }) => {
     const { session, signOut } = useAuthStore.getState();
 
     if (!session) {
@@ -19,6 +20,8 @@ export const Route = createFileRoute("/_authenticated")({
         search: { redirect: location.href },
       });
     }
+
+    await ensureMe(session.user.id);
   },
   component: Outlet,
 });

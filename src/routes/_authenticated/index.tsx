@@ -1,29 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useAuth } from "@shared/auth";
-import { useSignOut } from "@features/auth";
+import { createFileRoute } from "@tanstack/react-router";
+import { redirectToLandingArea } from "@features/authorization";
 
+// "/" has no page of its own: it sends the user to their area.
 export const Route = createFileRoute("/_authenticated/")({
-  component: Index,
+  beforeLoad: () => redirectToLandingArea(),
 });
-
-function Index() {
-  const session = useAuth();
-  const signOut = useSignOut();
-
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-
-      {session ? (
-        <div className="mt-4 flex items-center gap-3">
-          <span>{session.user.email}</span>
-          <button type="button" onClick={signOut}>
-            Sign out
-          </button>
-        </div>
-      ) : (
-        <Link to="/signin">Sign in</Link>
-      )}
-    </div>
-  );
-}

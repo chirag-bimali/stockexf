@@ -5,9 +5,11 @@ import type { ApiResponse } from "@shared/api";
 
 type TokenProvider = () => string | null;
 type UnauthorizedHandler = () => void;
+type ForbiddenHandler = () => void;
 
 let tokenProvider: TokenProvider | null = null;
 let unauthorizedHandler: UnauthorizedHandler | null = null;
+let forbiddenHandler: ForbiddenHandler | null = null;
 
 export function setTokenProvider(provider: TokenProvider | null): void {
   tokenProvider = provider;
@@ -17,6 +19,10 @@ export function setUnauthorizedHandler(
   handler: UnauthorizedHandler | null,
 ): void {
   unauthorizedHandler = handler;
+}
+
+export function setForbiddenHandler(handler: ForbiddenHandler | null): void {
+  forbiddenHandler = handler;
 }
 
 const http = axios.create({
@@ -51,6 +57,9 @@ function onResponseError(error: AxiosError) {
   if (error.response) {
     if (error.response.status === 401 && !isAuthEndpoint(error.config?.url)) {
       unauthorizedHandler?.();
+    }
+    if (error.response.status === 403) {
+      forbiddenHandler?.();
     }
 
     const body: unknown = error.response.data;

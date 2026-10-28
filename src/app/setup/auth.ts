@@ -1,6 +1,11 @@
-import { setTokenProvider, setUnauthorizedHandler } from "@shared/lib/http";
+import {
+  setForbiddenHandler,
+  setTokenProvider,
+  setUnauthorizedHandler,
+} from "@shared/lib/http";
 import { getAccessToken, initAuthSync, useAuthStore } from "@shared/auth";
 import { queryClient } from "@shared/lib/query-client";
+import { meKeys } from "@features/authorization";
 
 type SetupAuthOptions = {
   onUnauthorized?: () => void;
@@ -18,6 +23,10 @@ export function setupAuth({ onUnauthorized }: SetupAuthOptions = {}): void {
     useAuthStore.getState().signOut();
     queryClient.clear();
     onUnauthorized?.();
+  });
+
+  setForbiddenHandler(() => {
+    void queryClient.invalidateQueries({ queryKey: meKeys.all });
   });
 
   initAuthSync();
