@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@shared/auth";
 import { useSignOut } from "@features/auth";
 import { AREAS, AreaSwitcher, usePermissions } from "@features/authorization";
-import { getDisplayName, getInitials } from "../model/user-display";
+import { getInitials } from "../model/user-display";
 import { Icon } from "./Icons";
 
 export function UserMenu() {
@@ -11,12 +11,6 @@ export function UserMenu() {
   const { can } = usePermissions();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const email = session?.user.email ?? "";
-  const displayName = getDisplayName(email);
-  const initials = getInitials(displayName);
-  const roleLabel = session?.user.roles[0] ?? "Member";
-  const canSwitchAreas = AREAS.filter((area) => can(area.permission)).length > 1;
 
   useEffect(() => {
     if (!open) return;
@@ -41,6 +35,17 @@ export function UserMenu() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
+
+  if (!session) return null;
+
+  const email = session.user.email;
+  const displayName = `${session.user.firstName} ${session.user.lastName}`.trim();
+  const initials = getInitials(displayName);
+  const roleLabel = session.user.roles[0];
+  if (!roleLabel) {
+    throw new Error("The authenticated user has no assigned role.");
+  }
+  const canSwitchAreas = AREAS.filter((area) => can(area.permission)).length > 1;
 
   return (
     <div ref={menuRef} className="relative">
