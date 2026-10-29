@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@shared/auth";
 import { usersQueryOptions } from "../model/users.queries";
@@ -8,7 +8,11 @@ import { UserRow } from "./UserRow";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
-export function UsersPanel() {
+type UsersPanelProps = {
+  onTotalCountChange: (totalCount: number | null) => void;
+};
+
+export function UsersPanel({ onTotalCountChange }: UsersPanelProps) {
   const session = useAuth();
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -34,6 +38,10 @@ export function UsersPanel() {
   const usersQuery = useQuery(usersQueryOptions(params));
   const users = usersQuery.data?.items ?? [];
   const totalPages = usersQuery.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    onTotalCountChange(usersQuery.data?.totalCount ?? null);
+  }, [onTotalCountChange, usersQuery.data?.totalCount]);
   const allSelected =
     users.length > 0 && users.every((user) => selected.has(user.email));
 
