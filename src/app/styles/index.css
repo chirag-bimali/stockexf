@@ -315,6 +315,10 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
+  --ds-color-brand-25: rgba(117, 146, 255, 0.05);
+  --ds-color-brand-50: rgba(117, 146, 255, 0.1);
+  --ds-color-brand-100: rgba(117, 146, 255, 0.18);
+  --ds-color-brand-200: rgba(117, 146, 255, 0.28);
 
   /* Color: Semantic roles */
   --ds-color-background: #080b12;
@@ -341,6 +345,18 @@
   --ds-color-danger-soft: rgba(240, 68, 56, 0.12);
   --ds-color-info: #36bffa;
   --ds-color-info-soft: rgba(11, 165, 236, 0.12);
+
+  /* Updated */
+  --ds-color-success-50: rgba(71, 205, 137, 0.12);
+  --ds-color-success-100: rgba(71, 205, 137, 0.24);
+  --ds-color-error-50: rgba(249, 112, 102, 0.12);
+  --ds-color-error-100: rgba(249, 112, 102, 0.24);
+  --ds-color-warning-50: rgba(253, 176, 34, 0.12);
+  --ds-color-warning-100: rgba(253, 176, 34, 0.24);
+  --ds-color-orange-50: rgba(251, 101, 20, 0.12);
+  --ds-color-orange-100: rgba(251, 101, 20, 0.24);
+  --ds-color-blue-light-50: rgba(54, 191, 250, 0.12);
+  --ds-color-blue-light-100: rgba(54, 191, 250, 0.24);
 
   /* Shadow */
   --ds-shadow-xs: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.3); /* 0 1px 2px rgba(0, 0, 0, 0.3) */
